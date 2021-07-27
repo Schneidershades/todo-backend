@@ -25,12 +25,36 @@ class PinController extends Controller
     }
 
     public function generate(){
-        $pin = rand(1000, 9999);
 
-        $searchPin = Pin::where('pin', $pin)->first();
+        $min = 1000;
+        $max = 9999;
+        $nonSeq = 190;
 
-        if($searchPin){
-            $pin = rand(1000, 9999);
+        $totalNumbers = $max - $min;
+
+        $total = $totalNumbers - $nonSeq;
+
+        $pin = rand($min, $max);
+
+        $searchPin = Pin::where('pin', $pin)->get();
+
+        $countGeneratedPin = $searchPin->count();
+
+        $multiplyCount = $total * $countGeneratedPin;
+
+        $divideOverallCounts = 0;
+
+        if ($multiplyCount > 0) {
+
+            $allPins = Pin::all();
+
+            $countAllPins = $allPins->count();
+
+            $divideOverallCounts = $countAllPins / $multiplyCount;
+        }
+
+        if($searchPin && $divideOverallCounts < 1){
+            $pin = rand($min, $max);
         }
 
         if($this->validatePin($pin) == false){
